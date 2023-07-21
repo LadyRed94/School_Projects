@@ -1,177 +1,60 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Merge_Sort
+namespace LogicalPrograms
 {
-    class MainClass
+    class Program
     {
-        static void Main(string[] args)
+        static public void MergeMethod(int[] numbers, int left, int mid, int right)
         {
-            int[] nums = { 10, 24, 13, 15, 87, 64, 92, 5, 1004 };
-
-            Console.WriteLine("Original Array:");
-
-            foreach(int i in nums)
+            int[] temp = new int[25];
+            int i, left_end, num_elements, tmp_pos;
+            left_end = (mid - 1);
+            tmp_pos = left;
+            num_elements = (right - left + 1);
+            while ((left <= left_end) && (mid <= right))
             {
-                Console.Write(i + ", ");
-            }
-            Console.WriteLine();
-
-            Merge_Sort(nums);
-            Console.WriteLine();
-
-            Console.WriteLine("Sorted Array:");
-
-            foreach (int i in nums)
-            {
-                Console.Write(i + ", ");
-            }
-            Console.WriteLine();
-        }
-
-        //Just a function to call the recursive method
-        static public void Merge_Sort(int[] nums)
-        {
-            //Pre-Sorts Threads using Parallelism
-            int[] lefts = Partition(nums);
-            Thread[] threads = new Thread[lefts.Length];
-            if (threads.Length != 0)
-            {
-                for (int i = 0; i < threads.Length; i++)
-                {
-                    int calcRight = i * (nums.Length / lefts.Length) - 1;
-                    int calcLeft = lefts[i];
-                    threads[i] = new Thread(j =>
-                    {
-                        SortMethod(nums, calcLeft, calcRight);
-                    });
-                    threads[i].Start();
-                    threads[i].Join();
-                }
-            }
-
-            //Cleans up sort
-            SortMethod(nums, 0, nums.Length - 1);
-        }
-
-        //Will partition for most numbers
-        static public int[] Partition(int[]nums)
-        {
-            if (nums.Length % 4 == 0)
-            {
-                int[] lefts = new int[4];
-                int dif = nums.Length / 4;
-                for (int i = 1; i < 4; i++)
-                {
-                    lefts[i] = dif * 4;
-                }
-
-                return lefts;
-            }
-
-            else if (nums.Length % 2 == 0)
-            {
-                int[] lefts = new int[2];
-                int dif = nums.Length / 2;
-                for (int i = 1; i < 2; i++)
-                {
-                    lefts[i] = dif * 2;
-                }
-
-                return lefts;
-            }
-
-            else if (nums.Length % 3 == 0)
-            {
-                int[] lefts = new int[3];
-                int dif = nums.Length / 3;
-                for (int i = 1; i < 3; i++)
-                {
-                    lefts[i] = dif * 3;
-                }
-
-                return lefts;
-            }
-
-            else
-            {
-                int[] threads = new int[0];
-                return threads;
-            }
-        }
-
-        //Recursive method
-        static public void SortMethod(int[] nums, int left, int right)
-        {
-            int mid;
-
-            if (right > left)
-            {
-                //Sets mid
-                mid = (right + left) / 2;
-
-                //Sort Left Side
-                SortMethod(nums, left, mid);
-
-                //Sort Right Side
-                SortMethod(nums, (mid + 1), right);
-
-                //Merge Sides
-                Merge(nums, left, (mid + 1), right);
-            }
-        }
-
-        //Merge function
-        static public void Merge(int[] nums, int left, int mid, int right)
-        {
-            //creats holder array
-            int[] holder = new int[nums.Length];
-
-            //initialize and set variables
-            int i, end, elements, pos;
-
-            //sets end for left array
-            end = (mid - 1);
-
-            //position tracker
-            pos = left;
-
-            //number of total elements
-            elements = (right - left + 1);
-
-            //sorts array till end of one array
-            while ((left <= end) && (mid <= right))
-            {
-                if (nums[left] <= nums[mid])
-                {
-                    holder[pos++] = nums[left++];
-                }
-
+                if (numbers[left] <= numbers[mid])
+                    temp[tmp_pos++] = numbers[left++];
                 else
-                {
-                    holder[pos++] = nums[mid++];
-                }
+                    temp[tmp_pos++] = numbers[mid++];
             }
-
-            //puts in leftover data from left
-            while (left <= end)
-            {
-                holder[pos++] = nums[left++];
-            }
-
-            //puts in leftover data from right
+            while (left <= left_end)
+                temp[tmp_pos++] = numbers[left++];
             while (mid <= right)
+                temp[tmp_pos++] = numbers[mid++];
+            for (i = 0; i < num_elements; i++)
             {
-                holder[pos++] = nums[mid++];
-            }
-
-            //reads sorted data into original array
-            for (i = 0; i < elements; i++)
-            {
-                nums[right] = holder[right];
+                numbers[right] = temp[right];
                 right--;
             }
+        }
+        static public void SortMethod(int[] numbers, int left, int right)
+        {
+            int mid;
+            if (right > left)
+            {
+                mid = (right + left) / 2;
+                SortMethod(numbers, left, mid);
+                SortMethod(numbers, (mid + 1), right);
+                MergeMethod(numbers, left, (mid + 1), right);
+            }
+        }
+        static void Main(string[] args)
+        {
+            int[] numbers = { 38, 27, 43, 3, 9, 82, 10 };
+            int len = numbers.Length;
+            Console.WriteLine("Before Merge Sort:");
+            foreach (int item in numbers)
+            {
+                Console.Write(item + " ");
+            }
+            Console.WriteLine();
+            Console.WriteLine("After Merge Sort");
+            SortMethod(numbers, 0, len - 1);
+            foreach (int item in numbers)
+            {
+                Console.Write(item + " ");
+            }
+            Console.Read();
         }
     }
 }
